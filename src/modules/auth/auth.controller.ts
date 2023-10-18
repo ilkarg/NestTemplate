@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UserRepository } from './repositories/user.repository';
 import { UserEntity } from './entities/user.entity';
@@ -7,23 +7,20 @@ import { UserEntity } from './entities/user.entity';
 export class AuthController {
   constructor(private readonly userRepository: UserRepository) {}
 
-  @Get('test')
-  getTest(): string {
-    return 'test';
-  }
-
-  @Get('index')
-  getIndex(): string {
-    return 'Index';
-  }
-
   @Post('registration')
-  async postRegistration(@Body() userDto: UserDto): Promise<any> {
+  async postRegistration(@Body() userDto: UserDto): Promise<string> {
     const userEntity: UserEntity = Object.assign(new UserEntity(), userDto);
     /*const userEntity: UserEntity = new UserEntity();
     userEntity.username = userDto.username;
     userEntity.password = userDto.password;*/
     const user = await this.userRepository.create(userEntity);
-    return user;
+    return JSON.stringify(user);
+  }
+
+  @Post('login')
+  async postLogin(@Body() userDto: UserDto): Promise<string> {
+    const userEntity = Object.assign(new UserEntity(), userDto);
+    const user = await this.userRepository.find(userEntity);
+    return JSON.stringify(user.length > 0 ? user[0] : {response: 'Неверные логин или пароль'});
   }
 }

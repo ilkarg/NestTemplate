@@ -10,8 +10,13 @@ export class UserRepository {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async findAll(): Promise<UserEntity[]> {
-    return this.userRepository.find();
+  async find(userData: UserEntity): Promise<UserEntity[]> {
+    return this.userRepository.find({
+      where: {
+        username: userData.username,
+        password: userData.password
+      }
+    });
   }
 
   async create(userData: UserEntity): Promise<UserEntity> {
